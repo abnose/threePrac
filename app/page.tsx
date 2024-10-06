@@ -58,7 +58,7 @@ export default function Home() {
 
     // Load the handle texture
     const handleTexture = textureLoader.load(
-      "/assets/Handle_Texture.jpg",
+      "/assets/Wood_Roughness.jpg",
       (texture) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
@@ -74,16 +74,22 @@ export default function Home() {
 
     const modelLoader = new GLTFLoader();
     modelLoader.setDRACOLoader(dracoLoader);
+    // Load the table model
     modelLoader.load("/assets/TABLE.glb", (data) => {
       const model = data.scene;
+
       // Apply a wood material to the table
       const woodMaterial = new THREE.MeshStandardMaterial({ map: woodTexture });
+      const handleMaterial = new THREE.MeshStandardMaterial({
+        map: handleTexture,
+      });
 
       model.traverse((object) => {
         if (object.isMesh) {
-          console.log(object);
           object.material = woodMaterial;
-
+          if (object.name.toLowerCase().includes("hand")) {
+            object.material = handleMaterial;
+          }
           if (object.name.toLowerCase().includes("wall")) {
             object.visible = false;
           }
@@ -97,8 +103,71 @@ export default function Home() {
       model.scale.set(scaleFactor, scaleFactor, scaleFactor);
       model.rotation.set(Math.PI / 2, 0, 0);
       model.position.set(1, 2.5, 0);
+
+      // Add the table to the scene
       ground.add(model);
+
+      // ---- Add Paper on Table ----
+      // Load the paper texture (your resume as an image)
     });
+
+    const paperTexture = textureLoader.load("/assets/resume.png", (texture) => {
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.repeat.set(1, 1); // Scale to fit the plane
+    });
+
+    // Create the material for the paper
+    const paperMaterial = new THREE.MeshBasicMaterial({
+      map: paperTexture,
+    });
+
+    // Create a plane geometry to represent the paper (A4 paper size)
+    const paperGeo = new THREE.PlaneGeometry(0.5, 0.7);
+
+    // Create the mesh for the paper
+    const paper = new THREE.Mesh(paperGeo, paperMaterial);
+
+    // Adjust the paper rotation to lie flat on the table
+    paper.rotation.x = -0.5 * Math.PI; // Rotate to lie flat
+
+    // Position the paper on top of the table (adjust height slightly above the table surface)
+    paper.position.set(0.3, 0.115, 0); // Adjust y-position so it's just above the table surface
+
+    // Add the paper to the table so it moves with the table
+    scene.add(paper);
+
+    const paperTexture1 = textureLoader.load(
+      "/assets/resume.png",
+      (texture) => {
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.repeat.set(1, 1); // Scale to fit the plane
+      }
+    );
+
+    // Create the material for the paper
+    const paperMaterial1 = new THREE.MeshBasicMaterial({
+      map: paperTexture1,
+    });
+
+    // Create a plane geometry to represent the paper (A4 paper size)
+    const paperGeo1 = new THREE.PlaneGeometry(0.5, 0.7);
+
+    // Create the mesh for the second paper (page 2)
+    const paper1 = new THREE.Mesh(paperGeo1, paperMaterial1);
+
+    // Adjust the paper to lie flat on the table (along the x-axis)
+    paper1.rotation.x = -0.5 * Math.PI; // Lie flat on the table
+
+    // Rotate the paper around the z-axis (to rotate it on the table's surface)
+    paper1.rotation.z = -0.5; // Adjust this value for different angles (45 degrees here)
+
+    // Position the paper on top of the table (adjust height slightly above the table surface)
+    paper1.position.set(0.53, 0.1156, 0); // Adjust y-position so it's just above the table surface
+
+    // Add the second paper to the scene
+    scene.add(paper1);
 
     const gamingChair = new GLTFLoader();
     gamingChair.setDRACOLoader(dracoLoader);
@@ -120,6 +189,30 @@ export default function Home() {
       model.position.set(1, -1.5, 0);
       ground.add(model);
     });
+
+    // const monitor = new GLTFLoader();
+    // monitor.setDRACOLoader(dracoLoader);
+    // monitor.load("/assets/monitor.glb", (data) => {
+    //   const model = data.scene;
+
+    //   // Apply a brown material to the gaming chair
+    //   const brownMaterial = new THREE.MeshStandardMaterial({
+    //     color: 0x8b45,
+    //   });
+
+    //   model.traverse((object) => {
+    //     if (object.isMesh) {
+    //       object.material = brownMaterial;
+    //     }
+    //   });
+
+    //   const scaleFactor = 0.5;
+    //   model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    //   // model.rotation.set(Math.PI / 2, 4, 0);
+    //   model.position.set(0.53, 0.1156, -0.7);
+
+    //   scene.add(model);
+    // });
 
     // Helper function to create axis helpers
     function createAxisHelper(length) {
