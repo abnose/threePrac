@@ -190,29 +190,29 @@ export default function Home() {
       ground.add(model);
     });
 
-    // const monitor = new GLTFLoader();
-    // monitor.setDRACOLoader(dracoLoader);
-    // monitor.load("/assets/monitor.glb", (data) => {
-    //   const model = data.scene;
+    const monitor = new GLTFLoader();
+    monitor.setDRACOLoader(dracoLoader);
+    monitor.load("/assets/monitor.glb", (data) => {
+      const model = data.scene;
 
-    //   // Apply a brown material to the gaming chair
-    //   const brownMaterial = new THREE.MeshStandardMaterial({
-    //     color: 0x8b45,
-    //   });
+      // Apply a brown material to the gaming chair
+      const brownMaterial = new THREE.MeshStandardMaterial({
+        color: 0x8b45,
+      });
 
-    //   model.traverse((object) => {
-    //     if (object.isMesh) {
-    //       object.material = brownMaterial;
-    //     }
-    //   });
+      model.traverse((object) => {
+        if (object.isMesh) {
+          object.material = brownMaterial;
+        }
+      });
 
-    //   const scaleFactor = 0.5;
-    //   model.scale.set(scaleFactor, scaleFactor, scaleFactor);
-    //   // model.rotation.set(Math.PI / 2, 4, 0);
-    //   model.position.set(0.53, 0.1156, -0.7);
-
-    //   scene.add(model);
-    // });
+      const scaleFactor = 4;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      // model.rotation.set(Math.PI / 2, 4, 0);
+      model.position.set(-1.7, -1.3, 2.3);
+      model.rotation.y = -1.6;
+      scene.add(model);
+    });
 
     // Helper function to create axis helpers
     function createAxisHelper(length) {
