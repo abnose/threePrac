@@ -66,19 +66,31 @@ export default function Home() {
       }
     );
 
+    const plantTexture = textureLoader.load(
+      "/assets/plants_0007_color_1k.jpg",
+      (texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(1, 1); // Adjust the scale of the handle texture
+      }
+    );
+
     // Load the table model
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath(
       "https://www.gstatic.com/draco/versioned/decoders/1.5.7/"
     );
 
+    // Load the table model with animation
     const modelLoader = new GLTFLoader();
     modelLoader.setDRACOLoader(dracoLoader);
-    // Load the table model
-    modelLoader.load("/assets/TABLE.glb", (data) => {
-      const model = data.scene;
 
-      // Apply a wood material to the table
+    let mixer; // Define the animation mixer globally to access it in the animation loop
+
+    modelLoader.load("/assets/TABLE.glb", (gltf) => {
+      const model = gltf.scene;
+
+      // Apply materials or modifications as needed
       const woodMaterial = new THREE.MeshStandardMaterial({ map: woodTexture });
       const handleMaterial = new THREE.MeshStandardMaterial({
         map: handleTexture,
@@ -107,8 +119,15 @@ export default function Home() {
       // Add the table to the scene
       ground.add(model);
 
-      // ---- Add Paper on Table ----
-      // Load the paper texture (your resume as an image)
+      // ---- Access and Play Animations ----
+      mixer = new THREE.AnimationMixer(model); // Create the mixer for the table model
+
+      const animations = gltf.animations; // Access the animations array
+      console.log(animations);
+      if (animations && animations.length > 0) {
+        const action = mixer.clipAction(animations[0]); // Access the first animation clip
+        action.play(); // Play the animation
+      }
     });
 
     const paperTexture = textureLoader.load("/assets/resume.png", (texture) => {
@@ -201,6 +220,20 @@ export default function Home() {
       });
 
       model.traverse((object) => {
+        // console.log(object, "+++++++");
+
+        if (
+          object.name.toLowerCase().includes("cube058") ||
+          object.name.toLowerCase().includes("cube059") ||
+          object.name.toLowerCase().includes("cube060") ||
+          object.name.toLowerCase().includes("cylinder") ||
+          object.name.toLowerCase().includes("cylinder001") ||
+          object.name.toLowerCase().includes("cylinder002") ||
+          object.name.toLowerCase().includes("cylinder003")
+        ) {
+          object.position.y = 0.36;
+        }
+
         if (object.isMesh) {
           object.material = brownMaterial;
         }
@@ -211,6 +244,31 @@ export default function Home() {
       // model.rotation.set(Math.PI / 2, 4, 0);
       model.position.set(-1.7, -1.3, 2.3);
       model.rotation.y = -1.6;
+      scene.add(model);
+    });
+
+    const flower1 = new GLTFLoader();
+    flower1.setDRACOLoader(dracoLoader);
+    flower1.load("/assets/flower2.glb", (data) => {
+      const model = data.scene;
+
+      const plantMaterial = new THREE.MeshStandardMaterial({
+        map: plantTexture,
+      });
+
+      model.traverse((object) => {
+        console.log(object);
+
+        if (object.name.toLowerCase().includes("plant")) {
+          object.material = plantMaterial;
+        }
+      });
+
+      const scaleFactor = 1.5;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      // model.rotation.set(Math.PI / 2, 4, 0);
+      model.position.set(-2, -1.85, -0.5);
+      // model.rotation.y = -0.3;
       scene.add(model);
     });
 
@@ -226,6 +284,10 @@ export default function Home() {
     function animate() {
       requestAnimationFrame(animate);
       controls.update(); // Apply damping (if enabled) and other control changes
+
+      if (mixer) {
+        mixer.update(0.01); // Update the animation mixer with a small delta time
+      }
       renderer.render(scene, camera);
     }
 
