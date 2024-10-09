@@ -56,6 +56,15 @@ export default function Home() {
       }
     );
 
+    const cluthTexture = textureLoader.load(
+      "/assets/color 2.png",
+      (texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(4, 4); // Adjust the scale of the texture
+      }
+    );
+
     // Load the handle texture
     const handleTexture = textureLoader.load(
       "/assets/Wood_Roughness.jpg",
@@ -91,9 +100,13 @@ export default function Home() {
       const model = gltf.scene;
 
       // Apply materials or modifications as needed
-      const woodMaterial = new THREE.MeshStandardMaterial({ map: woodTexture });
+      const woodMaterial = new THREE.MeshStandardMaterial({
+        map: woodTexture,
+        color: 0x736047,
+      });
       const handleMaterial = new THREE.MeshStandardMaterial({
         map: handleTexture,
+        color: 0x503029,
       });
 
       model.traverse((object) => {
@@ -123,7 +136,7 @@ export default function Home() {
       mixer = new THREE.AnimationMixer(model); // Create the mixer for the table model
 
       const animations = gltf.animations; // Access the animations array
-      console.log(animations);
+      // console.log(animations);
       if (animations && animations.length > 0) {
         const action = mixer.clipAction(animations[0]); // Access the first animation clip
         action.play(); // Play the animation
@@ -190,21 +203,25 @@ export default function Home() {
 
     const gamingChair = new GLTFLoader();
     gamingChair.setDRACOLoader(dracoLoader);
-    gamingChair.load("/assets/gamer table.glb", (data) => {
+    gamingChair.load("/assets/Office chair.glb", (data) => {
       const model = data.scene;
 
       // Apply a brown material to the gaming chair
       const brownMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-
+      const cluthMaterial = new THREE.MeshStandardMaterial({
+        map: cluthTexture,
+      });
       model.traverse((object) => {
+        // console.log(object);
         if (object.isMesh) {
-          object.material = brownMaterial;
+          if (object.name.toLowerCase().includes("cube055")) {
+          }
         }
       });
 
       const scaleFactor = 2.5;
       model.scale.set(scaleFactor, scaleFactor, scaleFactor);
-      model.rotation.set(Math.PI / 2, 4, 0);
+      model.rotation.set(Math.PI / 2, -6, 0);
       model.position.set(1, -1.5, 0);
       ground.add(model);
     });
@@ -235,7 +252,7 @@ export default function Home() {
         }
 
         if (object.isMesh) {
-          object.material = brownMaterial;
+          // object.material = brownMaterial;
         }
       });
 
@@ -253,22 +270,22 @@ export default function Home() {
       const model = data.scene;
 
       const plantMaterial = new THREE.MeshStandardMaterial({
-        map: plantTexture,
+        // map: plantTexture,
+        color: 0x8b45,
       });
 
       model.traverse((object) => {
-        console.log(object);
-
-        if (object.name.toLowerCase().includes("plant")) {
-          object.material = plantMaterial;
-        }
+        // console.log(object);
+        // if (object.name.toLowerCase().includes("plant")) {
+        //   object.material = plantMaterial;
+        // }
       });
 
-      const scaleFactor = 1.5;
-      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      // const scaleFactor = 1.5;
+      // model.scale.set(scaleFactor, scaleFactor, scaleFactor);
       // model.rotation.set(Math.PI / 2, 4, 0);
-      model.position.set(-2, -1.85, -0.5);
-      // model.rotation.y = -0.3;
+      model.position.set(-2.2, -1.85, -0);
+      model.rotation.y = -0.3;
       scene.add(model);
     });
 
