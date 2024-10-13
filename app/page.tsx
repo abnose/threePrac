@@ -289,6 +289,32 @@ export default function Home() {
       scene.add(model);
     });
 
+    const book = new GLTFLoader();
+    book.setDRACOLoader(dracoLoader);
+    book.load("/assets/book.glb", (data) => {
+      const model = data.scene;
+
+      //  const plantMaterial = new THREE.MeshStandardMaterial({
+      //    map: plantTexture,
+      //    color: 0x8b45,
+      //  });
+
+      model.traverse((object) => {
+        // console.log(object);
+        // if (object.name.toLowerCase().includes("plant")) {
+        //   object.material = plantMaterial;
+        // }
+      });
+
+      const scaleFactor = 2;
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      // model.rotation.set(Math.PI / 2, 4, 0);
+      // model.position.set(-12.2, -1.3, -0);
+      model.position.set(-13.7, -1.2, -0.3);
+      // model.rotation.y = -0.3;
+      scene.add(model);
+    });
+
     // Helper function to create axis helpers
     function createAxisHelper(length) {
       const axesHelper = new THREE.AxesHelper(length);
